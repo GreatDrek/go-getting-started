@@ -94,6 +94,6 @@ func infomydb(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("Error scanning ticks"))
 			return
 		}
-		w.Write([]byte(tick.String()))
+		w.Write([]byte(tick.String() + "/n \n"))
 	}
 }
