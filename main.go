@@ -1,12 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"os"
-
-	"github.com/gin-gonic/gin"
-	_ "github.com/heroku/x/hmetrics/onload"
 )
 
 func main() {
@@ -16,14 +14,37 @@ func main() {
 		log.Fatal("$PORT must be set")
 	}
 
-	router := gin.New()
-	router.Use(gin.Logger())
-	router.LoadHTMLGlob("templates/*.tmpl.html")
-	router.Static("/static", "static")
+	http.HandleFunc("/", mainPage)
+	http.HandleFunc("/users", users)
 
-	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl.html", nil)
-	})
+	log.Fatal("Start server")
 
-	router.Run(":" + port)
+	err := http.ListenAndServe(":"+port, nil)
+	if err != nil {
+		log.Fatal("Error:", err)
+	}
+}
+
+type User struct {
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+}
+
+func mainPage(w http.ResponseWriter, r *http.Request) {
+	//user := User{FirstName: "Vasia", LastName: "Drek"}
+	//js, err := json.Marshal(user)
+	//if err != nil {
+	//	fmt.Println("Error:", err)
+	//}
+	w.Write([]byte(r.URL.Path))
+	//fmt.Println(r.URL.Path)
+}
+
+func users(w http.ResponseWriter, r *http.Request) {
+	userSlice := []User{User{"One", "Two"}, User{"Three", "Four"}}
+	js, err := json.Marshal(userSlice)
+	if err != nil {
+		log.Fatal("Error:", err)
+	}
+	w.Write(js)
 }
