@@ -61,9 +61,14 @@ func users(w http.ResponseWriter, r *http.Request) {
 }
 
 func mydb(w http.ResponseWriter, r *http.Request) {
-	_, err := db.Exec("insert into Products (model, company, price) values ('iPhone X', $1, $2)",
-		"Apple", 72000)
-	if err != nil {
-		log.Fatal("Error db:", err)
+	//_, err := db.Exec("insert into Products (model, company, price) values ('iPhone X', $1, $2)",	"Apple", 72000)
+	//if err != nil {
+	//	log.Fatal("Error db:", err)
+	//}
+	if _, err := db.Exec("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)"); err != nil {
+		w.Write([]byte("Error add data base info"))
+		return
+	} else {
+		w.Write([]byte("Add data base info"))
 	}
 }
