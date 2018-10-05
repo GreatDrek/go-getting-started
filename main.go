@@ -29,6 +29,7 @@ func main() {
 	http.HandleFunc("/users", users)
 	http.HandleFunc("/db", mydb)
 	http.HandleFunc("/infodb", infomydb)
+	http.HandleFunc("/deletedb", deletemydb)
 
 	db, err = sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
@@ -94,6 +95,13 @@ func infomydb(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("Error scanning ticks"))
 			return
 		}
-		w.Write([]byte(tick.String() + "/n \n"))
+		w.Write([]byte(tick.String() + "\n"))
+	}
+}
+
+func deletemydb(w http.ResponseWriter, r *http.Request) {
+	result, err := db.Exec("DELETE FROM ticks")
+	if err != nil {
+		w.Write([]byte("Error delete"))
 	}
 }
