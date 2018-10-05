@@ -28,7 +28,7 @@ func main() {
 	http.HandleFunc("/users", users)
 	http.HandleFunc("/db", mydb)
 
-	db, err = sql.Open("postgres", os.Getenv("postgres://vvyrgvcitdhpbd:7b6cf6526b1839736ee8edab5a8cbac7bb9590d59656d172356584a4d88447e5@ec2-54-217-245-26.eu-west-1.compute.amazonaws.com:5432/d4qm0eh3iljgrt"))
+	db, err = sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatalf("Error opening database: %q", err)
 	}
