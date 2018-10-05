@@ -73,6 +73,11 @@ func mydb(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.Write([]byte("Add data base info"))
 	}
+
+	if _, err := db.Exec("INSERT INTO ticks VALUES (now())"); err != nil {
+		w.Write([]byte("Error incrementing tick: %q"))
+		return
+	}
 }
 
 func infomydb(w http.ResponseWriter, r *http.Request) {
