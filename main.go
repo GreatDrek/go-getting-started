@@ -100,7 +100,7 @@ func infomydb(w http.ResponseWriter, r *http.Request) {
 }
 
 func deletemydb(w http.ResponseWriter, r *http.Request) {
-	result, err := db.Exec("DELETE FROM ticks")
+	_, err := db.Exec("DELETE FROM ticks")
 	if err != nil {
 		w.Write([]byte("Error delete"))
 	}
