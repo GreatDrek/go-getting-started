@@ -11,7 +11,8 @@ func main() {
 	port := os.Getenv("PORT")
 
 	if port == "" {
-		log.Fatal("$PORT must be set")
+		//log.Fatal("$PORT must be set")
+		port = "5000"
 	}
 
 	http.HandleFunc("/", mainPage)
@@ -29,7 +30,9 @@ type User struct {
 }
 
 func mainPage(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte(r.URL.Path))
+	urlP := r.URL.Path
+	b := []byte(urlP)
+	w.Write(b[1:])
 }
 
 func users(w http.ResponseWriter, r *http.Request) {
