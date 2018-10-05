@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"database/sql"
 
@@ -27,6 +28,7 @@ func main() {
 	http.HandleFunc("/", mainPage)
 	http.HandleFunc("/users", users)
 	http.HandleFunc("/db", mydb)
+	http.HandleFunc("/infodb", infomydb)
 
 	db, err = sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
@@ -70,5 +72,23 @@ func mydb(w http.ResponseWriter, r *http.Request) {
 		return
 	} else {
 		w.Write([]byte("Add data base info"))
+	}
+}
+
+func infomydb(w http.ResponseWriter, r *http.Request) {
+	rows, err := db.Query("SELECT tick FROM ticks")
+	if err != nil {
+		w.Write([]byte("Error reading ticks"))
+		return
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		var tick time.Time
+		if err := rows.Scan(&tick); err != nil {
+			w.Write([]byte("Error scanning ticks"))
+			return
+		}
+		w.Write([]byte(tick.String()))
 	}
 }
