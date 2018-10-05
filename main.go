@@ -6,11 +6,17 @@ import (
 	"net/http"
 	"os"
 
-	//"database/sql"
+	"database/sql"
+
 	_ "github.com/lib/pq"
 )
 
+var (
+	db *sql.DB
+)
+
 func main() {
+	var err error
 	port := os.Getenv("PORT")
 
 	if port == "" {
@@ -20,8 +26,15 @@ func main() {
 
 	http.HandleFunc("/", mainPage)
 	http.HandleFunc("/users", users)
+	http.HandleFunc("/db", mydb)
 
-	err := http.ListenAndServe(":"+port, nil)
+	db, err = sql.Open("postgres", os.Getenv("postgres://vvyrgvcitdhpbd:7b6cf6526b1839736ee8edab5a8cbac7bb9590d59656d172356584a4d88447e5@ec2-54-217-245-26.eu-west-1.compute.amazonaws.com:5432/d4qm0eh3iljgrt"))
+	if err != nil {
+		log.Fatalf("Error opening database: %q", err)
+	}
+	defer db.Close()
+
+	err = http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		log.Fatal("Error:", err)
 	}
@@ -45,4 +58,12 @@ func users(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("Error:", err)
 	}
 	w.Write(js)
+}
+
+func mydb(w http.ResponseWriter, r *http.Request) {
+	_, err := db.Exec("insert into Products (model, company, price) values ('iPhone X', $1, $2)",
+		"Apple", 72000)
+	if err != nil {
+		log.Fatal("Error db:", err)
+	}
 }
