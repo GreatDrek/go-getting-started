@@ -17,8 +17,6 @@ func main() {
 	http.HandleFunc("/", mainPage)
 	http.HandleFunc("/users", users)
 
-	log.Fatal("Start server")
-
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		log.Fatal("Error:", err)
@@ -31,13 +29,7 @@ type User struct {
 }
 
 func mainPage(w http.ResponseWriter, r *http.Request) {
-	//user := User{FirstName: "Vasia", LastName: "Drek"}
-	//js, err := json.Marshal(user)
-	//if err != nil {
-	//	fmt.Println("Error:", err)
-	//}
 	w.Write([]byte(r.URL.Path))
-	//fmt.Println(r.URL.Path)
 }
 
 func users(w http.ResponseWriter, r *http.Request) {
