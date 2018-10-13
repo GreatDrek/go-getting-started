@@ -76,6 +76,8 @@ func mydb(w http.ResponseWriter, r *http.Request) {
 	if _, err := db.Exec("INSERT INTO weather VALUES ('San Francisco', 46)"); err != nil {
 		w.Write([]byte("Error incrementing tick: %q"))
 		return
+	} else {
+		w.Write([]byte("Add info"))
 	}
 }
 
@@ -99,7 +101,7 @@ func infomydb(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		//var tick time.Time
 		var weatherTest weather
-		if err := rows.Scan(&weatherTest); err != nil {
+		if err := rows.Scan(&weatherTest.city, &weatherTest.temp_lo); err != nil {
 			w.Write([]byte("Error scanning ticks"))
 			return
 		}
