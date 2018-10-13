@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
-	//"math/rand"
+	"math/rand"
 	"net/http"
 	"os"
 
@@ -75,7 +75,7 @@ func mydb(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Add data base info"))
 	}
 
-	if _, err := db.Exec("INSERT INTO weather VALUES ('San Francisco', $1)", 7200); err != nil {
+	if _, err := db.Exec("INSERT INTO weather VALUES ('San Francisco', $1)", rand.Int31()); err != nil {
 		w.Write([]byte("Error incrementing tick: %q"))
 		return
 	} else {
