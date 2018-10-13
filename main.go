@@ -5,7 +5,9 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
+
+	//"time"
+	"strconv"
 
 	"database/sql"
 
@@ -77,6 +79,15 @@ func mydb(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type weather struct {
+	city    string
+	temp_lo int
+}
+
+func (w weather) String() string {
+	return w.city + " : " + strconv.Itoa(w.temp_lo)
+}
+
 func infomydb(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query("SELECT * FROM weather")
 	if err != nil {
@@ -86,12 +97,13 @@ func infomydb(w http.ResponseWriter, r *http.Request) {
 
 	defer rows.Close()
 	for rows.Next() {
-		var tick time.Time
-		if err := rows.Scan(&tick); err != nil {
+		//var tick time.Time
+		var weatherTest weather
+		if err := rows.Scan(&weatherTest); err != nil {
 			w.Write([]byte("Error scanning ticks"))
 			return
 		}
-		w.Write([]byte(tick.String() + "\n"))
+		w.Write([]byte(weatherTest.String() + "\n"))
 	}
 }
 
@@ -101,3 +113,5 @@ func deletemydb(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Error delete"))
 	}
 }
+
+//"DROP TABLE ticks"
