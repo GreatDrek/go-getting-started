@@ -35,6 +35,12 @@ func main() {
 	http.HandleFunc("/infodb", infomydb)
 	http.HandleFunc("/deletedb", deletemydb)
 
+	http.HandleFunc("/sdb", sdb)
+	http.HandleFunc("/sdb2", sdb2)
+
+	//connStr := "user=postgres password=37352410 dbname=postgres sslmode=disable"
+	//db, err = sql.Open("postgres", connStr)
+
 	db, err = sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatalf("Error opening database: %q", err)
@@ -68,18 +74,20 @@ func users(w http.ResponseWriter, r *http.Request) {
 }
 
 func mydb(w http.ResponseWriter, r *http.Request) {
-	if _, err := db.Exec("CREATE TABLE IF NOT EXISTS weather (city varchar(80), temp_lo int)"); err != nil {
+	if _, err := db.Exec("CREATE TABLE IF NOT EXISTS weather (city int, temp_lo int)"); err != nil {
 		w.Write([]byte("Error add data base info"))
 		return
 	} else {
 		w.Write([]byte("Add data base info"))
 	}
 
-	if _, err := db.Exec("INSERT INTO weather VALUES ('San Francisco', $1)", rand.Int31()); err != nil {
-		w.Write([]byte("Error incrementing tick: %q"))
-		return
-	} else {
-		w.Write([]byte("Add info"))
+	for i := 0; i < 10000; i++ {
+		if _, err := db.Exec("INSERT INTO weather VALUES ($1, $2)", rand.Int31(), rand.Int31()); err != nil {
+			w.Write([]byte("Error incrementing tick: %q"))
+			return
+		} else {
+			//w.Write([]byte("Add info"))
+		}
 	}
 }
 
@@ -116,6 +124,66 @@ func deletemydb(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.Write([]byte("Error delete"))
 	}
+}
+
+func sdb(w http.ResponseWriter, r *http.Request) {
+	rows, err := db.Query("SELECT city, temp_lo FROM weather")
+	if err != nil {
+		w.Write([]byte("Error reading ticks"))
+		return
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		//var tick time.Time
+		var numb int
+		var numb2 int
+		if err := rows.Scan(&numb, &numb2); err != nil {
+			w.Write([]byte("Error scanning ticks"))
+			return
+		}
+		if numb == 513934398 {
+			w.Write([]byte(strconv.Itoa(numb) + " : " + strconv.Itoa(numb2) + "\n"))
+		}
+
+		w.Write([]byte("_"))
+	}
+}
+
+func sdb2(w http.ResponseWriter, r *http.Request) {
+	rows, err := db.Query("SELECT city, temp_lo FROM weather WHERE city = 513934398")
+	if err != nil {
+		w.Write([]byte("Error reading ticks"))
+		return
+	}
+
+	defer rows.Close()
+
+	var numb int
+	var numb2 int
+
+	for rows.Next() {
+		if err := rows.Scan(&numb, &numb2); err != nil {
+			w.Write([]byte("Error scanning ticks" + err.Error()))
+			return
+		}
+		w.Write([]byte("_"))
+		w.Write([]byte(strconv.Itoa(numb) + " : " + strconv.Itoa(numb2) + "\n"))
+	}
+
+	//	for rows.Next() {
+	//		//var tick time.Time
+	//		var numb int
+	//		var numb2 int
+	//		if err := rows.Scan(&numb, &numb2); err != nil {
+	//			w.Write([]byte("Error scanning ticks"))
+	//			return
+	//		}
+	//		if numb == 513934398 {
+	//			w.Write([]byte(strconv.Itoa(numb) + " : " + strconv.Itoa(numb2) + "\n"))
+	//		}
+	//	}
 }
 
 //"DROP TABLE ticks"
